@@ -42,6 +42,11 @@ export async function searchCiNii(query: string): Promise<SearchResult[]> {
     const title = xmlText(entry, 'title');
     if (!title) continue;
 
+    // タイトルに検索語が含まれない場合はスキップ（subject/キーワードタグのみマッチした無関係論文を排除）
+    const queryTerms = query.split(/\s+/).filter(t => t.length > 0);
+    const titleLower = title.toLowerCase();
+    if (queryTerms.length > 0 && !queryTerms.some(t => titleLower.includes(t.toLowerCase()))) continue;
+
     // IR (機関リポジトリ) の URI を PDF ダウンロード先として使用
     const irUri = xmlAttr(entry, 'dc:identifier', 'rdf:datatype', 'cir:URI');
     if (!irUri) continue; // IR URIがない場合はスキップ（OA保証なし）
