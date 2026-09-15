@@ -45,6 +45,7 @@ export async function searchCiNii(query: string): Promise<SearchResult[]> {
     // IR (機関リポジトリ) の URI を PDF ダウンロード先として使用
     const irUri = xmlAttr(entry, 'dc:identifier', 'rdf:datatype', 'cir:URI');
     if (!irUri) continue; // IR URIがない場合はスキップ（OA保証なし）
+    if (/ndl\.go\.jp/i.test(irUri)) continue; // 国会図書館はネット上でDL不可
 
     const ciniiUrl = entry.match(/<link href="(https:\/\/cir\.nii\.ac\.jp\/crid\/[^"]+)"/)?.[1] ?? '';
 
